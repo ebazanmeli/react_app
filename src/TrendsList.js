@@ -1,16 +1,12 @@
 import React from "react";
 import './App.css';
 import Trend from './Trend';
-import TrendPicture from './TrendPicture';
 
 class TrendsList extends React.Component {
 
     state = {
         trends: [],
-        trendsPicture: [],
-        trendsToShow: [],
-        hasTrends: false,
-        hasPictures: false
+        hasTrends: false
     }
 
     componentDidMount() {
@@ -32,21 +28,7 @@ class TrendsList extends React.Component {
     }
 
     mezclarArreglo() {
-        if(!this.state.hasPictures) {
-        this.state.trends.map((trend) => (
-            fetch("https://api.mercadolibre.com/sites/MLA/search?q=" + trend.keyword)
-                .then(res => res.json())
-                .then((data) => {
-                    const pictures = [...this.state.trendsPicture, data.results[0].thumbnail]
-                    this.setState({
-                        trendsPicture: pictures,
-                        hasPictures: true
-                    })
-                })
-                .catch(console.log)
-        ))
-        }
-        return this.state.trends.sort(function() {return Math.random() - 0.5}).slice(0, 20);
+        return this.state.trends.sort(function() {return Math.random() - 0.5}).slice(0, 25);
     }
 
     obtenerClassName() {
@@ -74,24 +56,12 @@ class TrendsList extends React.Component {
         }
     }
 
-    renderizarTrend(trend) {
-        return (
-            <Trend trend={trend} className={this.obtenerClassName()}/>
-        )
-    }
-
-    renderizarPicture() {
-        const size = this.state.trendsPicture.length;
-        const rnd = Math.floor(Math.random() * size);
-        return (
-            <TrendPicture trendPicture={this.state.trendsPicture[rnd]} />
-        )
-    }
-
     render() {
         return (
             this.mezclarArreglo().map((trend) => (
-                (this.mostrarPicture() === 1) ? this.renderizarPicture() : this.renderizarTrend(trend)
+                (this.mostrarPicture() === 1)
+                    ? <Trend isPicture={true} keyword={trend.keyword} />
+                    : <Trend isPicture={false} keyword={trend.keyword} color={this.obtenerClassName()}/>
             ))
         )
     }
